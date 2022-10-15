@@ -60,7 +60,7 @@ class m_usuario extends CI_Model {
             $sql = $sql . "and tipo = '$tipo_usuario' ";
         }
         if ($nome != '') {
-            $sql = $sql . "and nome like '%$nome%' "; // p like com porcentagem na variavel "%$variavel%" trás todos os usuarios com o nome informado
+            $sql = $sql . "and nome like '%$nome%' "; // o like com porcentagem na variavel "%$variavel%" trás todos os usuarios com o nome informado
     
         }
 
@@ -88,15 +88,32 @@ class m_usuario extends CI_Model {
     //função alterar
     public function alterar($usuario, $senha, $nome, $tipo_usuario, $usu_sistema){
 
+    $sql = "update usuarios set usuario = '$usuario'";
 
-    $sql = "update usuarios set usuario = '$usuario', senha =md5('$senha'),  nome = '$nome', tipo = '$tipo_usuario'
-    where usuario = '$usuario'";
+    // $sql = "update usuarios set usuario = '$usuario', senha =md5('$senha'),  nome = '$nome', tipo = '$tipo_usuario'
+    // where usuario = '$usuario'";
+
+
+    if ($senha != '') {
+        $sql = $sql . "and senha =md5('$senha') ";
+    }
+    if ($nome != ''){
+        $sql = $sql . "and nome = '$nome' ";
+    }
+    if ($tipo_usuario != ''){
+        $sql = $sql . "and tipo = '$tipo_usuario' ";
+    }
+    if ($usuario != ''){
+        $sql = $sql . "where usuario = '$usuario' ";
+    }
+
+//todos os dados no banco estão sendo substituidos pelos usuarios setados na alteração
         
         // query de inserir os dados no BD
     $this->db->query($sql);
 
          //verifica se a inserção ocorreu com sucesso
-    if($this->db->affected_rows() > 0){
+    if($this->db->affected_rows() >= 0){
         //fazemos a inserção do log na nuvem;
         //Fazemos a instência da model m_log
         $this->load->model('m_log');

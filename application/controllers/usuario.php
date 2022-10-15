@@ -144,28 +144,28 @@ class usuario extends CI_Controller {
              $retorno = array ('codigo' => 7,
                                  'msg' => 'Usuário do sistema não informado');
          }
-        elseif (trim($tipo_usuario) != 'ADMINISTRADOR' &&
-            trim($tipo_usuario) != 'COMUM' &&
-            trim($tipo_usuario) != '') {
+        // elseif (trim($tipo_usuario) != 'ADMINISTRADOR' &&
+        //     trim($tipo_usuario) != 'COMUM' &&
+        //     trim($tipo_usuario) != '') {
 
-                $retorno = array('codigo' => 5,
-                'msg' => 'Tipo de usuário inválido');
-            }
-            //nome precisa ser informado
-            elseif (trim($nome) == ''){
-                $retorno = array('codigo' => 3,
-                'msg' => 'Nome não informado');
-            } 
-            //validação para usuario
-            elseif (trim($usuario) == ''){
-                $retorno = array('codigo' => 2,
-                'msg' => 'usuario não informado');
-            } 
-            //validação para senha que devera ser informada
-            elseif(trim($senha) == ''){
-                $retorno = array('codigo' => 4,
-                'msg' => 'Senha não pode estar vazia');
-            } 
+        //         $retorno = array('codigo' => 5,
+        //         'msg' => 'Tipo de usuário inválido');
+        //     }
+        //     //nome precisa ser informado
+        //     elseif (trim($nome) == ''){
+        //         $retorno = array('codigo' => 3,
+        //         'msg' => 'Nome não informado');
+        //     } 
+        //     //validação para usuario
+        //     elseif (trim($usuario) == ''){
+        //         $retorno = array('codigo' => 2,
+        //         'msg' => 'usuario não informado');
+        //     } 
+        //     //validação para senha que devera ser informada
+        //     elseif(trim($senha) == ''){
+        //         $retorno = array('codigo' => 4,
+        //         'msg' => 'Senha não pode estar vazia');
+        //     } 
 
             else{
                    //realizo a instância da Model
