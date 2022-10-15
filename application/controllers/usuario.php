@@ -15,6 +15,8 @@ class usuario extends CI_Controller {
         // 4 - Faltou informar o nome (frontend)
         // 5 - Faltou informar o tipo de Usuario (frontend)
         // 6 - Houve algum problema no insert da tabela (banco)
+        // 7 - Usuário do sistema não infromado (frontEnd)
+        // 8 - Houve problema mp salvamento do LOG, mas o usuário foi incluso (LOG)
 
         $json = file_get_contents('php://input');
         $resultado = json_decode($json);
@@ -24,9 +26,17 @@ class usuario extends CI_Controller {
         $nome = $resultado->nome;
         $tipo_usuario = strtoupper($resultado->tipo_usuario); //strtoupper põe todos os valores string em caixa alta(letras maiúsculas).
 
+
+        //abaixo colocaremos o ususário do sistema
+        $usu_sistema = strtoupper($resultado->usu_sistema);
+
         //Faremos uma validação para sabermos se todos os dados foram enviados.
 
-        if (trim($usuario) == ''){
+        if (trim($usu_sistema) == '') {
+            $retorno = array ('codigo' => 7,
+                                'msg' => 'Usuário do sistema não informado');
+        }
+        elseif (trim($usuario) == ''){
             $retorno = array('codigo' => 2,
                              'msg' => 'Usuario não informado');
         }
@@ -49,7 +59,7 @@ class usuario extends CI_Controller {
             $this->load->model('m_usuario');
 
             //atribuindo ao $retorno o array com informações da validação do acesso
-            $retorno = $this->m_usuario->inserir($usuario, $senha, $nome, $tipo_usuario);
+            $retorno = $this->m_usuario->inserir($usuario, $senha, $nome, $tipo_usuario, $usu_sistema);
         }
         //Retorno no formato JSON
         echo json_encode($retorno);
@@ -114,6 +124,8 @@ class usuario extends CI_Controller {
         //4 - Senha em branco
         //5 - tipo de usuário inválido (frontend)
         //6 - Dados não encontrados (banco)
+        //7 - Usuário do sistema não infromado (frontEnd)
+        //8 - Houve problema no salvamento do LOG, mas o usuário foi alterado (LOG)
 
         $json = file_get_contents('php://input');
         $resultado = json_decode($json);
@@ -123,7 +135,16 @@ class usuario extends CI_Controller {
         $nome = $resultado->nome;
         $tipo_usuario = strtoupper($resultado->tipo_usuario);
 
-        if (trim($tipo_usuario) != 'ADMINISTRADOR' &&
+         //abaixo colocaremos o ususário do sistema
+         $usu_sistema = strtoupper($resultado->usu_sistema);
+
+         //Faremos uma validação para sabermos se todos os dados foram enviados.
+ 
+        if (trim($usu_sistema) == '') {
+             $retorno = array ('codigo' => 7,
+                                 'msg' => 'Usuário do sistema não informado');
+         }
+        elseif (trim($tipo_usuario) != 'ADMINISTRADOR' &&
             trim($tipo_usuario) != 'COMUM' &&
             trim($tipo_usuario) != '') {
 
@@ -151,7 +172,7 @@ class usuario extends CI_Controller {
             $this->load->model('m_usuario');
 
             //atribuindo ao $retorno o array com informações da validação do acesso
-            $retorno = $this->m_usuario->alterar($usuario, $senha, $nome, $tipo_usuario);
+            $retorno = $this->m_usuario->alterar($usuario, $senha, $nome, $tipo_usuario, $usu_sistema);
         }
         //Retorno no formato JSON
         echo json_encode($retorno);
@@ -174,8 +195,16 @@ class usuario extends CI_Controller {
 
         $usuario = $resultado->usuario;
 
+         //abaixo colocaremos o ususário do sistema
+         $usu_sistema = strtoupper($resultado->usu_sistema);
 
-        if (trim($usuario) == ''){
+         //Faremos uma validação para sabermos se todos os dados foram enviados.
+         if (trim($usu_sistema) == '') {
+            $retorno = array ('codigo' => 7,
+                                'msg' => 'Usuário do sistema não informado');
+        }
+    
+        elseif (trim($usuario) == ''){
             $retorno = array('codigo' => 2,
                             'msg' => 'Usuairio não informado');
         }
@@ -184,7 +213,7 @@ class usuario extends CI_Controller {
         $this->load->model('m_usuario');
 
         //atribuindo ao $retorno o array com informações da validação do acesso
-        $retorno = $this->m_usuario->desativar($usuario);
+        $retorno = $this->m_usuario->desativar($usuario, $usu_sistema);
     }
     //Retorno no formato JSON
     echo json_encode($retorno);

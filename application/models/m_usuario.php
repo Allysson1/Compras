@@ -2,20 +2,34 @@
 defined('BASEPATH') or exit ('No direct script acess allowed');
 
 class m_usuario extends CI_Model {
-    public function inserir($usuario, $senha, $nome, $tipo_usuario){
+    public function inserir($usuario, $senha, $nome, $tipo_usuario, $usu_sistema){
 
-            // query de inserir os dados no BD
-        $this->db->query("insert into usuarios (usuario, senha, nome, tipo)
-                                    values ('$usuario', md5('$senha'), '$nome', '$tipo_usuario')");
+        // query de inserir os dados no BD
 
-        //verifica a inserção dos dados
-        if ($this->db->affected_rows() > 0){
-            $dados = array('codigo' => 1,
-                            'msg' => 'Usuário cadastrado corretamente');
-        }
-        else{
-            $dados = array('codigo' => 6,
-                            'msg' => 'Houve um problema na inserção na tabela de usuários');
+        $sql = "insert into usuarios (usuario, senha, nome, tipo)
+            values ('$usuario', md5('$senha'), '$nome', '$tipo_usuario')";
+
+        $this->db->query($sql);
+
+            //verifica se a inserção ocorreu com sucesso
+        if($this->db->affected_rows() > 0){
+            //fazemos a inserção do log na nuvem;
+            //Fazemos a instência da model m_log
+            $this->load->model('m_log');
+        
+
+            //fazemos a chamada do método de inserção do log
+            $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
+
+            //verifica a inserção dos dados
+            if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
+                $dados = array('codigo' => 1,
+                                'msg' => 'Usuário cadastrado corretamente');
+            }
+        }else{
+            $dados = array('codigo' => 8,
+                            'msg' => 'Houve algum problema no salvamento do log, porém, 
+                            o usuário foi cadastrado corretamente na tabela de usuários');
         }
 
         //envia o array com as informações tratadas acima pela estrutura de decisão if
@@ -72,20 +86,35 @@ class m_usuario extends CI_Model {
 
 
     //função alterar
-    public function alterar($usuario, $senha, $nome, $tipo_usuario){
+    public function alterar($usuario, $senha, $nome, $tipo_usuario, $usu_sistema){
 
+
+    $sql = "update usuarios set usuario = '$usuario', senha =md5('$senha'),  nome = '$nome', tipo = '$tipo_usuario'
+    where usuario = '$usuario'";
+        
         // query de inserir os dados no BD
-    $this->db->query("update usuarios set usuario = '$usuario', senha =md5('$senha'),  nome = '$nome', tipo = '$tipo_usuario'
-                      where usuario = '$usuario'");
+    $this->db->query($sql);
 
-    //verifica a atualização dos dados
-    if ($this->db->affected_rows() > 0){
-        $dados = array('codigo' => 1,
-                        'msg' => 'Usuário atualizado corretamente');
-    }
-    else{
-        $dados = array('codigo' => 6,
-                        'msg' => 'Houve um problema na atualização na tabela de usuários');
+         //verifica se a inserção ocorreu com sucesso
+    if($this->db->affected_rows() > 0){
+        //fazemos a inserção do log na nuvem;
+        //Fazemos a instência da model m_log
+        $this->load->model('m_log');
+    
+
+     //fazemos a chamada do método de inserção do log
+        $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
+
+        //verifica a atualização dos dados
+        if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
+            $dados = array('codigo' => 1,
+                            'msg' => 'Usuário alterado corretamente');
+        }
+    
+    }else{
+        $dados = array('codigo' => 8,
+                        'msg' => 'Houve algum problema no salvamento do log, porém, 
+                        o usuário foi alterado corretamente na tabela de usuários');
     }
 
     //envia o array com as informações tratadas acima pela estrutura de decisão if
@@ -99,24 +128,37 @@ class m_usuario extends CI_Model {
 
 
     //função desativar
-    public function desativar($usuario){ //a função desativa e não apaga o usuario, pois o usuario sempre dever permanecer no BD da empresa, mesmo que não esteja mais nela
+    public function desativar($usuario, $usu_sistema){ //a função desativa e não apaga o usuario, pois o usuario sempre dever permanecer no BD da empresa, mesmo que não esteja mais nela
 
         // query de inserir os dados no BD
-    $this->db->query("update usuarios set estatus = 'D' 
-                     where usuario = '$usuario'");
 
-    //verifica a atualização dos dados
-    if ($this->db->affected_rows() > 0){
-        $dados = array('codigo' => 1,
-                        'msg' => 'Usuário DESATIVADO corretamente');
-    }
-    else{
-        $dados = array('codigo' => 6,
-                        'msg' => 'Houve um problema na desativação do usuário');
-    }
+        $sql = "update usuarios set estatus = 'D' where usuario = '$usuario'";
 
-    //envia o array com as informações tratadas acima pela estrutura de decisão if
-    return $dados;
+        $this->db->query($sql);
+
+        if($this->db->affected_rows() >= 0){   //apenas jogou dados no db cloud quando adicionou o '>=', por que? (perguntar ao professor)
+            //fazemos a inserção do log na nuvem;
+            //Fazemos a instência da model m_log
+            $this->load->model('m_log');
+        
+    
+            //fazemos a chamada do método de inserção do log
+            $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
+        
+            //verifica a atualização dos dados
+            if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
+                $dados = array('codigo' => 1,
+                                'msg' => 'Usuário desativado corretamente');
+            }
+        }
+        else{
+            $dados = array('codigo' => 8,
+                            'msg' => 'Houve algum problema no salvamento do log, porém, o usuário foi desativado corretamente na tabela de usuários');
+        }
+
+    
+        //envia o array com as informações tratadas acima pela estrutura de decisão if
+        return $dados;
 
 
     }
