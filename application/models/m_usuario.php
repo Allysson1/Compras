@@ -88,7 +88,7 @@ class m_usuario extends CI_Model {
     //função alterar
     public function alterar($usuario, $senha, $nome, $tipo_usuario, $usu_sistema){
 
-    $sql = "update usuarios set usuario = '$usuario'";
+    $sql = "update usuarios set usuario = '$usuario' ";
 
     // $sql = "update usuarios set usuario = '$usuario', senha =md5('$senha'),  nome = '$nome', tipo = '$tipo_usuario'
     // where usuario = '$usuario'";
@@ -120,10 +120,10 @@ class m_usuario extends CI_Model {
     
 
      //fazemos a chamada do método de inserção do log
-        $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
+    $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
 
         //verifica a atualização dos dados
-        if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
+    if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
             $dados = array('codigo' => 1,
                             'msg' => 'Usuário alterado corretamente');
         }
