@@ -149,30 +149,45 @@ class m_usuario extends CI_Model {
 
         // query de inserir os dados no BD
 
-        $sql = "update usuarios set estatus = 'D' where usuario = '$usuario'";
+        //2 - Melhoria para desativação do usuário
+        $retorno = $this->db->query("select estatus from usuarios
+                                     where usuario ='$usuario'
+                                       and estatus != 'D'");
 
-        $this->db->query($sql);
+        if ($retorno->num_rows() > 0) {
 
-        if($this->db->affected_rows() >= 0){   //apenas jogou dados no db cloud quando adicionou o '>=', por que? (perguntar ao professor)
-            //fazemos a inserção do log na nuvem;
-            //Fazemos a instência da model m_log
-            $this->load->model('m_log');
-        
-    
-            //fazemos a chamada do método de inserção do log
-            $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
-        
-            //verifica a atualização dos dados
-            if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
-                $dados = array('codigo' => 1,
-                                'msg' => 'Usuário desativado corretamente');
+            $sql = "update usuarios set estatus = 'D' where usuario = '$usuario'";
+
+            $this->db->query($sql);
+
+            if($this->db->affected_rows() >= 0){   //apenas jogou dados no db cloud quando adicionou o '>=', por que? (perguntar ao professor)
+                    //fazemos a inserção do log na nuvem;
+                    //Fazemos a instência da model m_log
+                    $this->load->model('m_log');
+                
+            
+                    //fazemos a chamada do método de inserção do log
+                    $retorno_log = $this->m_log->inserir_log($usu_sistema, $sql);
+                
+                    //verifica a atualização dos dados
+                    if ($retorno_log['codigo'] == 1){ //de onde vem esse código?(perguntar ao professor)
+                        $dados = array('codigo' => 1,
+                                        'msg' => 'Usuário desativado corretamente');
+                    }
+
+                    else{
+                        $dados = array('codigo' => 8,
+                                        'msg' => 'Houve algum problema no salvamento do log, porém, o usuário foi desativado corretamente na tabela de usuários');
+                    }
+            
             }
         }
         else{
-            $dados = array('codigo' => 8,
-                            'msg' => 'Houve algum problema no salvamento do log, porém, o usuário foi desativado corretamente na tabela de usuários');
+            $dados = array('codigo' => 9,
+                                        'msg' => 'Usuário já está desativado');
         }
 
+        
     
         //envia o array com as informações tratadas acima pela estrutura de decisão if
         return $dados;
